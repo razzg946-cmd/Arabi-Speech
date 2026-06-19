@@ -14,14 +14,14 @@ st.markdown(
     <div style="display:flex; align-items:center;">
         <img src="data:image/png;base64,{data}" width="100">
         <h1 style="margin-left:25px;">
-             GulfTalk Translator
+             Saudi Arabia Translator
         </h1>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-st.write("Founder & CEO - Raj Gupta")
+st.write("Rvoice - Founder & CEO - Raj Gupta")
 
 # Language Selection
 input_lang = st.selectbox(
