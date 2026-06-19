@@ -1,6 +1,5 @@
 streamlit
 deep-translator
-edge-tts
-SpeechRecognition
+gtts
 audio-recorder-streamlit
-pydub
+SpeechRecognition
