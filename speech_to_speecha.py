@@ -14,7 +14,7 @@ st.markdown(
     <div style="display:flex; align-items:center;">
         <img src="data:image/png;base64,{data}" width="100">
         <h1 style="margin-left:25px;">
-            Rvoice - GulfTalk Translator
+             GulfTalk Translator
         </h1>
     </div>
     """,
