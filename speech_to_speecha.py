@@ -26,7 +26,7 @@ st.write("Rvoice - Founder & CEO - Raj Gupta")
 # Language Selection
 input_lang = st.selectbox(
     "Select Input Language",
-    ["Hindi", "Arabic"]
+    ["Hindi", "Arabic", "Tamil", "Kannada", "Malayalam"]
 )
 
 # Voice Selection
@@ -54,6 +54,18 @@ voices = {
     "Hindi": {
         "Male": "hi-IN-MadhurNeural",
         "Female": "hi-IN-SwaraNeural"
+    },
+    "Tamil": {
+        "Male": "ta-IN-ValluvarNeural",
+        "Female": "ta-IN-PallaviNeural"
+    },
+    "Kannada": {
+        "Male": "kn-IN-GaganNeural",
+        "Female": "kn-IN-SapnaNeural"
+    },
+    "Malayalam": {
+        "Male": "ml-IN-MidhunNeural",
+        "Female": "ml-IN-SobhanaNeural"
     }
 }
 
@@ -77,7 +89,24 @@ if st.button(" Convert & Translate"):
 
     try:
 
-        if input_lang == "Hindi":
+       lang_codes = {
+            "Hindi": "hi",
+            "Arabic": "ar",
+            "Tamil": "ta",
+            "Kannada": "kn",
+            "Malayalam": "ml"
+                    }
+            source_code = lang_codes[input_lang]
+
+             english_text = GoogleTranslator(
+             source=source_code,
+           target="en"
+         ).translate(user_text)
+
+           arabic_text = GoogleTranslator(
+           source="en",
+           target="ar"
+         ).translate(english_text)
 
             english_text = GoogleTranslator(
                 source="hi",
