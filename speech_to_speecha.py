@@ -12,7 +12,7 @@ with open("Rlogo.png", "rb") as f:
 st.markdown(
     f"""
     <div style="display:flex; align-items:center;">
-        <img src="data:image/png;base64,{data}" width="50">
+        <img src="data:image/png;base64,{data}" width="80">
         <h1 style="margin-left:10px;">
             Rvoice - GulfTalk Translator
         </h1>
