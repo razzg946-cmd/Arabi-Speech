@@ -4,8 +4,8 @@ import edge_tts
 import asyncio
 import tempfile
 import base64
-import streamlit as st
 
+# Logo
 with open("Rlogo.png", "rb") as f:
     data = base64.b64encode(f.read()).decode()
 
@@ -14,7 +14,7 @@ st.markdown(
     <div style="display:flex; align-items:center;">
         <img src="data:image/png;base64,{data}" width="100">
         <h1 style="margin-left:25px;">
-             Saudi Arabia Translator
+            Saudi Arabia Translator
         </h1>
     </div>
     """,
@@ -69,6 +69,16 @@ voices = {
     }
 }
 
+# Language Codes
+lang_codes = {
+    "Hindi": "hi",
+    "Arabic": "ar",
+    "Tamil": "ta",
+    "Kannada": "kn",
+    "Malayalam": "ml"
+}
+
+
 async def create_audio(text, voice):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
         path = fp.name
@@ -81,7 +91,8 @@ async def create_audio(text, voice):
 
     return audio_data
 
-if st.button(" Convert & Translate"):
+
+if st.button("🚀 Convert & Translate"):
 
     if not user_text.strip():
         st.warning("Please enter text")
@@ -89,118 +100,59 @@ if st.button(" Convert & Translate"):
 
     try:
 
-       lang_codes = {
-            "Hindi": "hi",
-            "Arabic": "ar",
-            "Tamil": "ta",
-            "Kannada": "kn",
-            "Malayalam": "ml"
-                    }
-            source_code = lang_codes[input_lang]
+        source_code = lang_codes[input_lang]
 
-             english_text = GoogleTranslator(
-             source=source_code,
-           target="en"
-         ).translate(user_text)
+        # Input → English
+        english_text = GoogleTranslator(
+            source=source_code,
+            target="en"
+        ).translate(user_text)
 
-           arabic_text = GoogleTranslator(
-           source="en",
-           target="ar"
-         ).translate(english_text)
+        # English → Arabic
+        arabic_text = GoogleTranslator(
+            source="en",
+            target="ar"
+        ).translate(english_text)
 
-            english_text = GoogleTranslator(
-                source="hi",
-                target="en"
-            ).translate(user_text)
+        # English Output
+        st.subheader("🇬🇧 English Translation")
+        st.success(english_text)
 
-            arabic_text = GoogleTranslator(
-                source="en",
-                target="ar"
-            ).translate(english_text)
-
-            st.subheader("🇬🇧 English Translation")
-            st.success(english_text)
-
-            en_audio = asyncio.run(
-                create_audio(
-                    english_text,
-                    voices["English"][voice_type]
-                )
+        en_audio = asyncio.run(
+            create_audio(
+                english_text,
+                voices["English"][voice_type]
             )
+        )
 
-            st.audio(en_audio)
-            st.download_button(
-                "⬇ Download English MP3",
-                en_audio,
-                "english.mp3",
-                "audio/mp3"
+        st.audio(en_audio)
+
+        st.download_button(
+            "⬇ Download English MP3",
+            en_audio,
+            "english.mp3",
+            "audio/mp3"
+        )
+
+        # Arabic Output
+        st.subheader("🇸🇦 Arabic Translation")
+        st.success(arabic_text)
+
+        ar_audio = asyncio.run(
+            create_audio(
+                arabic_text,
+                voices["Arabic"][voice_type]
             )
+        )
 
-            st.subheader("🇸🇦 Arabic Translation")
-            st.success(arabic_text)
+        st.audio(ar_audio)
 
-            ar_audio = asyncio.run(
-                create_audio(
-                    arabic_text,
-                    voices["Arabic"][voice_type]
-                )
-            )
-
-            st.audio(ar_audio)
-            st.download_button(
-                "⬇ Download Arabic MP3",
-                ar_audio,
-                "arabic.mp3",
-                "audio/mp3"
-            )
-
-        else:
-
-            english_text = GoogleTranslator(
-                source="ar",
-                target="en"
-            ).translate(user_text)
-
-            hindi_text = GoogleTranslator(
-                source="en",
-                target="hi"
-            ).translate(english_text)
-
-            st.subheader("🇬🇧 English Translation")
-            st.success(english_text)
-
-            en_audio = asyncio.run(
-                create_audio(
-                    english_text,
-                    voices["English"][voice_type]
-                )
-            )
-
-            st.audio(en_audio)
-            st.download_button(
-                "⬇ Download English MP3",
-                en_audio,
-                "english.mp3",
-                "audio/mp3"
-            )
-
-            st.subheader("🇮🇳 Hindi Translation")
-            st.success(hindi_text)
-
-            hi_audio = asyncio.run(
-                create_audio(
-                    hindi_text,
-                    voices["Hindi"][voice_type]
-                )
-            )
-
-            st.audio(hi_audio)
-            st.download_button(
-                "⬇ Download Hindi MP3",
-                hi_audio,
-                "hindi.mp3",
-                "audio/mp3"
-            )
+        st.download_button(
+            "⬇ Download Arabic MP3",
+            ar_audio,
+            "arabic.mp3",
+            "audio/mp3"
+        )
 
     except Exception as e:
         st.error(f"Error: {e}")
