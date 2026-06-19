@@ -4,15 +4,24 @@ import edge_tts
 import asyncio
 import tempfile
 
-st.set_page_config(
-    page_title="Rvoice - GulfTalk",
-    page_icon="Rlogo.png",
-    layout="centered"
+import base64
+
+with open("Rlogo.png", "rb") as f:
+    data = base64.b64encode(f.read()).decode()
+
+st.markdown(
+    f
+    <div style="display:flex; align-items:center;">
+        <img src="data:image/png;base64,{data}" width="50">
+        <h1 style="margin-left:10px;">
+            Rvoice - GulfTalk Translator
+        </h1>
+    </div>
+    
+    unsafe_allow_html=True
 )
 
-st.image("Rlogo.png", width=150)
-
-st.title("🌍 Rvoice - GulfTalk Translator")
+st.write("Founder & CEO - Raj Gupta")
 st.write("Founder & CEO - Raj Gupta")
 
 # Language Selection
