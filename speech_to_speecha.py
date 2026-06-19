@@ -25,10 +25,9 @@ voice_type = st.selectbox(
 
 if st.button("Convert & Translate"):
 
-
-if not user_text.strip():
-    st.warning("Please enter text")
-    st.stop()
+    if not user_text.strip():
+        st.warning("Please enter text")
+        st.stop()
 
 try:
 
