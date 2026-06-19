@@ -10,7 +10,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.image("icon.png", width=150)
+st.image("icon.png", width=110)
 
 st.title("🌍 Rvoice - GulfTalk Translator")
 st.write("Founder & CEO - Raj Gupta")
