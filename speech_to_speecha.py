@@ -6,11 +6,13 @@ import tempfile
 
 st.set_page_config(
     page_title="Rvoice - GulfTalk",
-    page_icon="🌍",
+    page_icon="icon.png",
     layout="centered"
 )
 
-st.title("🌍Rvoice - GulfTalk Translator")
+st.image("icon.png", width=150)
+
+st.title("🌍 Rvoice - GulfTalk Translator")
 st.write("Founder & CEO - Raj Gupta")
 
 # Language Selection
