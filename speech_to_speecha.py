@@ -10,7 +10,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("🌍 Rvoice - GulfTalk Translator")
+st.title("🌍Rvoice - GulfTalk Translator")
 st.write("Founder & CEO - Raj Gupta")
 
 # Language Selection
