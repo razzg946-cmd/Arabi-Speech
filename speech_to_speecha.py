@@ -1,116 +1,132 @@
 import streamlit as st
-import speech_recognition as sr
 from deep_translator import GoogleTranslator
-from audio_recorder_streamlit import audio_recorder
-import edge_tts
-import asyncio
-import tempfile
-import os
+from gtts import gTTS
+import io
 
-st.set_page_config(
-    page_title="Rvoice - Voice Translator",
-    page_icon="🎙️",
-    layout="centered"
+st.set_page_config(page_title="GulfTalk", page_icon="🌍", layout="centered")
+
+st.title("🌍 GulfTalk Translator")
+st.write("Hindi ↔ English ↔ Arabic Translator")
+
+input_lang = st.selectbox(
+"Select Input Language",
+["Hindi", "Arabic"]
 )
 
-st.title("🎙️ Rvoice - Voice to Voice Translator")
-
-languages = {
-    "English": "en",
-    "Hindi": "hi",
-    "Tamil": "ta",
-    "Telugu": "te",
-    "Malayalam": "ml",
-    "Kannada": "kn",
-    "Bengali": "bn",
-    "Gujarati": "gu",
-    "Marathi": "mr"
-}
-
-source_lang = st.selectbox(
-    "Input Language",
-    list(languages.keys())
+user_text = st.text_area(
+"Enter Text",
+height=120
 )
 
-target_lang = st.selectbox(
-    "Output Language",
-    list(languages.keys())
+voice_type = st.selectbox(
+"Voice Type (Demo Only)",
+["Male", "Female"]
 )
 
-voice_gender = st.selectbox(
-    "Voice",
-    ["Female", "Male"]
-)
+if st.button("Convert & Translate"):
 
-st.write("### 🎤 Record Voice")
 
-audio_bytes = audio_recorder(
-    pause_threshold=2.0,
-    sample_rate=44100
-)
+if not user_text.strip():
+    st.warning("Please enter text")
+    st.stop()
 
-if audio_bytes:
+try:
 
-    st.audio(audio_bytes)
+    if input_lang == "Hindi":
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-        f.write(audio_bytes)
-        audio_path = f.name
+        english_text = GoogleTranslator(
+            source="hi",
+            target="en"
+        ).translate(user_text)
 
-    recognizer = sr.Recognizer()
+        arabic_text = GoogleTranslator(
+            source="en",
+            target="ar"
+        ).translate(english_text)
 
-    try:
-        with sr.AudioFile(audio_path) as source:
-            audio_data = recognizer.record(source)
+        st.subheader("🇬🇧 English")
+        st.success(english_text)
 
-        text = recognizer.recognize_google(
-            audio_data,
-            language=languages[source_lang]
+        en_audio = io.BytesIO()
+        gTTS(
+            text=english_text,
+            lang="en"
+        ).write_to_fp(en_audio)
+
+        st.audio(en_audio.getvalue())
+
+        st.download_button(
+            "⬇ Download English MP3",
+            data=en_audio.getvalue(),
+            file_name="english.mp3",
+            mime="audio/mp3"
         )
 
-        st.success("Recognized Text")
-        st.write(text)
+        st.subheader("🇸🇦 Arabic")
+        st.success(arabic_text)
 
-        translated = GoogleTranslator(
-            source="auto",
-            target=languages[target_lang]
-        ).translate(text)
+        ar_audio = io.BytesIO()
+        gTTS(
+            text=arabic_text,
+            lang="ar"
+        ).write_to_fp(ar_audio)
 
-        st.success("Translated Text")
-        st.write(translated)
+        st.audio(ar_audio.getvalue())
 
-        if voice_gender == "Female":
-            voice = "en-US-JennyNeural"
-        else:
-            voice = "en-US-GuyNeural"
+        st.download_button(
+            "⬇ Download Arabic MP3",
+            data=ar_audio.getvalue(),
+            file_name="arabic.mp3",
+            mime="audio/mp3"
+        )
 
-        async def generate_voice():
-            output_file = "translated.mp3"
+    else:
 
-            communicate = edge_tts.Communicate(
-                translated,
-                voice
-            )
+        english_text = GoogleTranslator(
+            source="ar",
+            target="en"
+        ).translate(user_text)
 
-            await communicate.save(output_file)
+        hindi_text = GoogleTranslator(
+            source="en",
+            target="hi"
+        ).translate(english_text)
 
-            return output_file
+        st.subheader("🇬🇧 English")
+        st.success(english_text)
 
-        mp3_file = asyncio.run(generate_voice())
+        en_audio = io.BytesIO()
+        gTTS(
+            text=english_text,
+            lang="en"
+        ).write_to_fp(en_audio)
 
-        st.audio(mp3_file)
+        st.audio(en_audio.getvalue())
 
-        with open(mp3_file, "rb") as f:
-            st.download_button(
-                "⬇ Download MP3",
-                f,
-                file_name="rvoice_translation.mp3",
-                mime="audio/mp3"
-            )
+        st.download_button(
+            "⬇ Download English MP3",
+            data=en_audio.getvalue(),
+            file_name="english.mp3",
+            mime="audio/mp3"
+        )
 
-    except Exception as e:
-        st.error(f"Error: {e}")
+        st.subheader("🇮🇳 Hindi")
+        st.success(hindi_text)
 
-    finally:
-        if os.path.exists(audio_path):
-            os.remove(audio_path)
+        hi_audio = io.BytesIO()
+        gTTS(
+            text=hindi_text,
+            lang="hi"
+        ).write_to_fp(hi_audio)
+
+        st.audio(hi_audio.getvalue())
+
+        st.download_button(
+            "⬇ Download Hindi MP3",
+            data=hi_audio.getvalue(),
+            file_name="hindi.mp3",
+            mime="audio/mp3"
+        )
+
+except Exception as e:
+    st.error(f"Error: {e}")
