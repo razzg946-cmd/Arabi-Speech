@@ -1,131 +1,167 @@
 import streamlit as st
 from deep_translator import GoogleTranslator
-from gtts import gTTS
-import io
+import edge_tts
+import asyncio
+import tempfile
 
-st.set_page_config(page_title="GulfTalk", page_icon="🌍", layout="centered")
+st.set_page_config(
+    page_title="Rvoice - GulfTalk",
+    page_icon="🌍",
+    layout="centered"
+)
 
-st.title("Rvoice - GulfTalk Translator for Indians")
-st.write("Founder - Raj Gupta")
+st.title("🌍 Rvoice - GulfTalk Translator")
+st.write("Founder & CEO - Raj Gupta")
 
+# Language Selection
 input_lang = st.selectbox(
-"Select Input Language",
-["Hindi", "Arabic"]
+    "Select Input Language",
+    ["Hindi", "Arabic"]
 )
 
-user_text = st.text_area(
-"Enter Text",
-height=120
-)
-
+# Voice Selection
 voice_type = st.selectbox(
-"Voice Type (Demo Only)",
-["Male", "Female"]
+    "Select Voice",
+    ["Male", "Female"]
 )
 
-if st.button("Convert & Translate"):
+# Text Input
+user_text = st.text_area(
+    "Enter Text",
+    height=150
+)
+
+# Voice Mapping
+voices = {
+    "English": {
+        "Male": "en-US-GuyNeural",
+        "Female": "en-US-JennyNeural"
+    },
+    "Arabic": {
+        "Male": "ar-SA-HamedNeural",
+        "Female": "ar-SA-ZariyahNeural"
+    },
+    "Hindi": {
+        "Male": "hi-IN-MadhurNeural",
+        "Female": "hi-IN-SwaraNeural"
+    }
+}
+
+async def create_audio(text, voice):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+        path = fp.name
+
+    communicate = edge_tts.Communicate(text=text, voice=voice)
+    await communicate.save(path)
+
+    with open(path, "rb") as f:
+        audio_data = f.read()
+
+    return audio_data
+
+if st.button(" Convert & Translate"):
 
     if not user_text.strip():
         st.warning("Please enter text")
         st.stop()
 
-try:
+    try:
 
-    if input_lang == "Hindi":
+        if input_lang == "Hindi":
 
-        english_text = GoogleTranslator(
-            source="hi",
-            target="en"
-        ).translate(user_text)
+            english_text = GoogleTranslator(
+                source="hi",
+                target="en"
+            ).translate(user_text)
 
-        arabic_text = GoogleTranslator(
-            source="en",
-            target="ar"
-        ).translate(english_text)
+            arabic_text = GoogleTranslator(
+                source="en",
+                target="ar"
+            ).translate(english_text)
 
-        st.subheader("🇬🇧 English")
-        st.success(english_text)
+            st.subheader("🇬🇧 English Translation")
+            st.success(english_text)
 
-        en_audio = io.BytesIO()
-        gTTS(
-            text=english_text,
-            lang="en"
-        ).write_to_fp(en_audio)
+            en_audio = asyncio.run(
+                create_audio(
+                    english_text,
+                    voices["English"][voice_type]
+                )
+            )
 
-        st.audio(en_audio.getvalue())
+            st.audio(en_audio)
+            st.download_button(
+                "⬇ Download English MP3",
+                en_audio,
+                "english.mp3",
+                "audio/mp3"
+            )
 
-        st.download_button(
-            "⬇ Download English MP3",
-            data=en_audio.getvalue(),
-            file_name="english.mp3",
-            mime="audio/mp3"
-        )
+            st.subheader("🇸🇦 Arabic Translation")
+            st.success(arabic_text)
 
-        st.subheader("🇸🇦 Arabic")
-        st.success(arabic_text)
+            ar_audio = asyncio.run(
+                create_audio(
+                    arabic_text,
+                    voices["Arabic"][voice_type]
+                )
+            )
 
-        ar_audio = io.BytesIO()
-        gTTS(
-            text=arabic_text,
-            lang="ar"
-        ).write_to_fp(ar_audio)
+            st.audio(ar_audio)
+            st.download_button(
+                "⬇ Download Arabic MP3",
+                ar_audio,
+                "arabic.mp3",
+                "audio/mp3"
+            )
 
-        st.audio(ar_audio.getvalue())
+        else:
 
-        st.download_button(
-            "⬇ Download Arabic MP3",
-            data=ar_audio.getvalue(),
-            file_name="arabic.mp3",
-            mime="audio/mp3"
-        )
+            english_text = GoogleTranslator(
+                source="ar",
+                target="en"
+            ).translate(user_text)
 
-    else:
+            hindi_text = GoogleTranslator(
+                source="en",
+                target="hi"
+            ).translate(english_text)
 
-        english_text = GoogleTranslator(
-            source="ar",
-            target="en"
-        ).translate(user_text)
+            st.subheader("🇬🇧 English Translation")
+            st.success(english_text)
 
-        hindi_text = GoogleTranslator(
-            source="en",
-            target="hi"
-        ).translate(english_text)
+            en_audio = asyncio.run(
+                create_audio(
+                    english_text,
+                    voices["English"][voice_type]
+                )
+            )
 
-        st.subheader("🇬🇧 English")
-        st.success(english_text)
+            st.audio(en_audio)
+            st.download_button(
+                "⬇ Download English MP3",
+                en_audio,
+                "english.mp3",
+                "audio/mp3"
+            )
 
-        en_audio = io.BytesIO()
-        gTTS(
-            text=english_text,
-            lang="en"
-        ).write_to_fp(en_audio)
+            st.subheader("🇮🇳 Hindi Translation")
+            st.success(hindi_text)
 
-        st.audio(en_audio.getvalue())
+            hi_audio = asyncio.run(
+                create_audio(
+                    hindi_text,
+                    voices["Hindi"][voice_type]
+                )
+            )
 
-        st.download_button(
-            "⬇ Download English MP3",
-            data=en_audio.getvalue(),
-            file_name="english.mp3",
-            mime="audio/mp3"
-        )
+            st.audio(hi_audio)
+            st.download_button(
+                "⬇ Download Hindi MP3",
+                hi_audio,
+                "hindi.mp3",
+                "audio/mp3"
+            )
 
-        st.subheader("🇮🇳 Hindi")
-        st.success(hindi_text)
-
-        hi_audio = io.BytesIO()
-        gTTS(
-            text=hindi_text,
-            lang="hi"
-        ).write_to_fp(hi_audio)
-
-        st.audio(hi_audio.getvalue())
-
-        st.download_button(
-            "⬇ Download Hindi MP3",
-            data=hi_audio.getvalue(),
-            file_name="hindi.mp3",
-            mime="audio/mp3"
-        )
-
-except Exception as e:
-    st.error(f"Error: {e}")
+    except Exception as e:
+        st.error(f"Error: {e}")
