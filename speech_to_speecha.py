@@ -5,8 +5,8 @@ import io
 
 st.set_page_config(page_title="GulfTalk", page_icon="🌍", layout="centered")
 
-st.title("GulfTalk Translator for Indian")
-st.write("Rvoice ↔ Founder & CEO - Raj Gupta")
+st.title("Rvoice - GulfTalk Translator for Indian")
+st.write("Founder & CEO - Raj Gupta")
 
 input_lang = st.selectbox(
 "Select Input Language",
