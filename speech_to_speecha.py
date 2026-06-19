@@ -3,25 +3,24 @@ from deep_translator import GoogleTranslator
 import edge_tts
 import asyncio
 import tempfile
-
 import base64
+import streamlit as st
 
 with open("Rlogo.png", "rb") as f:
     data = base64.b64encode(f.read()).decode()
 
 st.markdown(
-    f
+    f"""
     <div style="display:flex; align-items:center;">
         <img src="data:image/png;base64,{data}" width="50">
         <h1 style="margin-left:10px;">
             Rvoice - GulfTalk Translator
         </h1>
     </div>
-    
+    """,
     unsafe_allow_html=True
 )
 
-st.write("Founder & CEO - Raj Gupta")
 st.write("Founder & CEO - Raj Gupta")
 
 # Language Selection
